@@ -1,0 +1,65 @@
+# vscode
+.vscode
+
+# hardhat
+artifacts
+cache
+deployments
+node_modules
+coverage
+coverage.json
+typechain
+
+
+# don't push the precious!
+.env
+
+# Built application files
+.DS*
+*.apk
+*.ap_
+*.aab
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/readme.md
+
+# Version control
+vcs.xml
+
+# lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+# lint/reports/
+
+# Other
+gas-report.txt
+ADboilerplates.js
+contracts/test/fuzzing/crytic-export
+not_used
+OLD
+scripts
+.prettierignore
+.prettierrc
+front-end
+solhint.json
+.solhintignore
