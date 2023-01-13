@@ -1,24 +1,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+/// @dev Importing IERC20 for Proof of Existence verification:
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./UBIToken.sol";
-// import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+
+/// @dev Use this interface if using Proof of Humanity checks.
+interface IProofOfHumanity {
+    /** @dev Return true if the submission is registered and not expired.
+     *  @param _submissionID The address of the submission.
+     *  @return Whether the submission is registered or not.
+     */
+    function isRegistered(address _submissionID) external view returns (bool);
+}
 
 /** @title Universal Basic Information Dashboard
  *  @author Armand Daigle
  *  @notice This contract rewards registered users with the UBI Token for submitting information
- *  and voting in a city or DAO context. Proof of Humanity, Proof of Existence, and CityDAO Citizen
- *  NFT requires/checks have been removed so that this contract can be deployed and interacted with
- *  by anyone. However, to demonstrate functionality in a concrete context, the variables and
- *  comments have been written with CityDAO in mind. 'Citizens' in general to mean DAO members.
- *  However, the bigger goal would be to implement this in actual cities of course. To see a version
- *  with all bells and whistles, check the UBIDashboard.sol file in the "../portfolio" folder.
- *  @dev If it is desired to only allow the contract owner to open and close UBI rounds, uncomment
- *  the Ownable.sol import line, uncomment the 'onlyOwner' modifiers on those functions, and add
- *  'is Ownable' after the contract name.
+ *  and voting in a city or DAO context. The CityDAO Citizen NFT require can be used in combination
+ *  with either the Proof Humanity or Proof of Existence personhood checks. To demonstrate
+ *  functionality in a concrete context, the variables and comments have been written with CityDAO
+ *  in mind. 'Citizens' in general to mean DAO members.
  */
-contract UBIDashboard {
+contract UBIDashboard is Ownable {
     struct CitizenData {
         UBIProgress progress;
         uint16 ubiCounter;
@@ -28,7 +34,7 @@ contract UBIDashboard {
         bool votedPreviousRound;
     }
 
-    /// Enum keeps track of what stage each Citizen is at
+    /// Enum keeps track of what UBI stage each Citizen is at
     enum UBIProgress {
         HasNotSubmittedUBI,
         HasSubmittedUBI,
@@ -36,7 +42,9 @@ contract UBIDashboard {
     }
 
     /// Immutable Interface Variables
+    IERC1155 public immutable i_cityDAOCitizenNFT;
     UBIToken public immutable i_ubiToken;
+    IProofOfHumanity public immutable i_PoH;
 
     /// Mappings and Variables for Citizen Data
     mapping(address => bool) public registeredCitizens;
@@ -73,8 +81,10 @@ contract UBIDashboard {
     error AlreadyClaimedUBIPayment();
     error MustBeInGoodStandingToReceiveUBI();
 
-    constructor(address _ubiToken) {
+    constructor(address _cityDAOCitizenNFTContract, address _ubiToken, address _PoH) {
+        i_cityDAOCitizenNFT = IERC1155(_cityDAOCitizenNFTContract);
         i_ubiToken = UBIToken(_ubiToken);
+        i_PoH = IProofOfHumanity(_PoH);
     }
 
     receive() external payable {}
@@ -90,7 +100,27 @@ contract UBIDashboard {
             revert AlreadyRegistered();
         }
 
-        // See portfolio version of this contract for Citizen NFT and proof of personhood checks.
+        // One-person-one-vote option using Proof of Humanity.
+        require(
+            !i_PoH.isRegistered(msg.sender),
+            "Must be a verified human via Proof of Humanity: https://www.proofofhumanity.id/"
+        );
+
+        // Alternate one-person-one-vote option: Governer DAO's Proof of Existence check:
+        require(
+            IERC20(0x5945bAF9272e0808165aDea61b932eC1604FB161).balanceOf(msg.sender) == 1,
+            "Authenticate with a Proof of Existence Token at https://onlyoneme.governordao.org/!"
+        );
+
+        // CityDAO Citizen NFT check:
+        // Verifying wallet has CityDAO Citizen NFT. ID is 42, obtained from smart contract
+        // at: https://github.com/citydaoproject/citydao-citizens/blob/master/src/CitizenNFT.sol
+        if (i_cityDAOCitizenNFT.balanceOf(msg.sender, 42) == 0) {
+            revert MustHoldCitizenNFT(
+                "CityDAO Citizen NFT Contract Address: ",
+                address(i_cityDAOCitizenNFT)
+            );
+        }
 
         // This mapping makes the whole system go.
         walletToCitizenUBIData[msg.sender] = CitizenData(
@@ -108,9 +138,10 @@ contract UBIDashboard {
 
     /** @notice Timestamps are converted to regular datetime on the front end.
      *  @dev Chainlink Automation can be used to open and close UBI rounds. Refer to the README
-     *  for more info. Either way, anyone can call this function.
+     *  and the "../portfolio" folder contracts for more info. Either way, anyone can call this
+     *  function.
      */
-    function openRound() external /*onlyOwner*/ {
+    function openRound() external {
         if (ubiRoundIsOpen == true) {
             revert UBIRoundIsAlreadyOpen();
         }
@@ -175,7 +206,7 @@ contract UBIDashboard {
             votedThisRound.push(msg.sender);
             // This math must be done at UBI submittal, since UBI withdrawals can/will happen
             // during future UBI rounds.
-            currentUBIAmount = i_ubiToken.ubiPayment();
+            currentUBIAmount = uint256(i_ubiToken.ubiPayment());
             totalUBIThisRound = votedThisRound.length * currentUBIAmount;
             totalUBIEver += currentUBIAmount;
 
@@ -193,17 +224,15 @@ contract UBIDashboard {
         }
     }
 
-    /// @dev Straight forward function that is called by the Chainlink Automation Network
+    /// @dev Straight forward function that would be called by the Chainlink Automation Network
     /// in a production build. Either way, anyone can call this function.
-    function closeRound() external /*onlyOwner*/ {
+    function closeRound() external {
         if (ubiRoundIsOpen == false) {
             revert UBIRoundHasAlreadyBeenClosed();
         }
-        // This if statement is commented out so anyone can open and close rounds on command for
-        // portfolio purposes. The unit tests were done with this section uncommented.
-        // if (block.timestamp < ubiRoundCloseTime) {
-        //     revert TooEarlyToCloseRound();
-        // }
+        if (block.timestamp < ubiRoundCloseTime) {
+            revert TooEarlyToCloseRound();
+        }
         ubiRoundIsOpen = false;
         uint256 timeRoundClosed = block.timestamp;
 
@@ -237,8 +266,9 @@ contract UBIDashboard {
             walletToCitizenUBIData[msg.sender].progress = UBIProgress.HasBeenPaid;
             walletToCitizenUBIData[msg.sender].votedPreviousRound = false;
             uint256 ubiAmount;
-            ubiAmount = i_ubiToken.ubiPayment();
-            // Finally, the actual minting.
+            ubiAmount = uint256(i_ubiToken.ubiPayment());
+            // Finally, the actual minting. The only way to mint UBI is to complete
+            // UBI Dashboard rounds.
             i_ubiToken.payUBI(msg.sender);
             emit CitizenHasBeenPaid(msg.sender, ubiAmount);
         }

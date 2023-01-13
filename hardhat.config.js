@@ -21,16 +21,21 @@ module.exports = {
         hardhat: {
             chainId: 31337,
             forking: {
-                url: POLYGON_MAINNET_RPC_URL,
-                blockNumber: 36470408,
+                url: GOERLI_RPC_URL,
+                blockNumber: 8259000,
             },
         },
         localhost: {
             url: "http://127.0.0.1:8454/",
             chainId: 31337,
-            blockNumber: 36470408,
+            blockNumber: 8259000,
         },
-        // Eth Mainnet
+        goerli: {
+            url: GOERLI_RPC_URL,
+            accounts: { mnemonic: mnemonic },
+            chainId: 5,
+            blockConfirmations: 6,
+        },
         /* Mainnet: {
       url: MAINNET_RPC_URL,
       accounts: [PRIVATE_KEY], // Change to Mainnet deployment wallet private key.
@@ -40,7 +45,9 @@ module.exports = {
     },
     solidity: { compilers: [{ version: "0.8.17" }, { version: "0.4.16" }, { version: "0.5.17" }] },
     etherscan: {
-        apikey: "",
+        apiKey: {
+            goerli: ETHERSCAN_API_KEY,
+        },
     },
     gasReporter: {
         enabled: true,
@@ -50,13 +57,10 @@ module.exports = {
         coinmarketcap: COINMARKETCAP_API_KEY,
         // gasPriceApi: "https://api.polygonscan.com/api?module=proxy&action=eth_gasPrice",
         // Eth is default base currency.
-        token: "MATIC",
+        // token: "MATIC",
     },
     namedAccounts: {
-        deployer: {
-            default: 0,
-            1: 0,
-        },
+        deployer: 0,
     },
     mocha: {
         timeout: 500000,

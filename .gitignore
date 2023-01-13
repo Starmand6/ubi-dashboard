@@ -63,3 +63,5 @@ scripts
 front-end
 solhint.json
 .solhintignore
+ubi-token-subgraph
+.eslintrc.js

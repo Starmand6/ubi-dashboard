@@ -1,7 +1,7 @@
 const { assert, expect } = require("chai");
 const { ethers, deployments, network } = require("hardhat");
+const { utils } = require("ethers");
 const { networkConfig } = require("../../helper-hardhat-config");
-const { utils, BigNumber } = require("ethers");
 const chainId = network.config.chainId;
 const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
@@ -15,8 +15,7 @@ if (chainId == 31337) {
             citizen2,
             citizen1Calling,
             citizen2Calling,
-            randoCalling,
-            ubiDashSigner;
+            randoCalling;
 
         beforeEach(async function () {
             accounts = await ethers.getSigners();
@@ -29,14 +28,9 @@ if (chainId == 31337) {
             const ubiTokenContract = await deployments.get("UBIToken");
             ubiDash = await ethers.getContractAt(ubiDashContract.abi, ubiDashContract.address);
             ubiToken = await ethers.getContractAt(ubiTokenContract.abi, ubiTokenContract.address);
-            // TODO: Create script and test it and include here.
             await ubiToken.transferOwnership(ubiDash.address);
-            // ubiDashSigner = await ethers.getSigner(ubiDash.address);
-            // await ubiToken.transferOwnership(citizen2.address);
-            // await ubiToken.connect(citizen2.address).payUBI(citizen1.address);
-            //ubiToken.connect(ubiDashSigner);
         });
-        // All constructor tests pass
+        // Aside from placeholders, all constructor tests pass
         describe("Constructor", function () {
             it("initializes contract objects correctly", async function () {
                 // const cityDAONFT = await ubiDash.i_cityDAOCitizenNFT();
@@ -56,14 +50,14 @@ if (chainId == 31337) {
                 await citizen1Calling.register();
                 await expect(citizen1Calling.register()).to.be.revertedWith("AlreadyRegistered");
             });
-            // Tests are run with the POH, POE, and Citizen NFT checks commented out in UBIDashboard.sol,
+            // Tests are run without the POH, POE, and Citizen NFT checks in UBIDashboard.sol,
             // since no testnet wallets will have them. Including them here for posterity's sake.
             it.skip("reverts if user fails Proof of Humanity or Proof of Existence", async function () {
-                await expect(citizen1Calling.register()).to.be.revertedWith("MustBeVerifiedHuman");
+                await expect(citizen1Calling.register()).to.be.reverted;
             });
 
             it.skip("reverts if wallet does not hold Citizen NFT", async function () {
-                await expect(citizen1Calling.register()).to.be.revertedWith("AlreadyRegistered");
+                await expect(citizen1Calling.register()).to.be.reverted;
             });
             it("adds user to mappings correctly", async function () {
                 await citizen1Calling.register();
@@ -76,7 +70,6 @@ if (chainId == 31337) {
                 await expect(citizen1Calling.register()).to.emit(ubiDash, "CitizenHasRegistered");
             });
         });
-        // All Between Rounds tests pass
         describe("Between Rounds", function () {
             it("closeRound() cannot be called", async function () {
                 await expect(ubiDash.closeRound()).to.be.revertedWith(
@@ -90,7 +83,6 @@ if (chainId == 31337) {
                 );
             });
         });
-        // All passing
         describe("Round Open", function () {
             beforeEach(async function () {
                 await citizen1Calling.register();
@@ -117,10 +109,9 @@ if (chainId == 31337) {
                 // Advancing time 2 hours
                 await time.increase(7200);
                 await expect(ubiDash.closeRound()).to.be.revertedWith("TooEarlyToCloseRound");
-                console.log(await time.latest());
                 // Advancing time a little past 13 days and 10 hours
                 await time.increase(1165000);
-                console.log(await time.latest());
+                // console.log(await time.latest());
                 await expect(ubiDash.closeRound()).to.not.be.reverted;
             });
             it("emits an event that returns UBI Round Open Time", async function () {
@@ -168,8 +159,8 @@ if (chainId == 31337) {
                 });
                 it("gets UBI stats distributed for this round and ever", async function () {
                     const [, , , totalUBIRound, totalUBIEver] = await ubiDash.getUBIStats();
-                    assert.equal(totalUBIRound, 1000);
-                    assert.equal(totalUBIEver, 1000);
+                    assert.equal(totalUBIRound.toString(), "1000000000000000000000");
+                    assert.equal(totalUBIEver.toString(), "1000000000000000000000");
                 });
                 it("updates UBI inGoodStanding correctly", async function () {
                     const [, , , , inGoodStanding] = await ubiDash.walletToCitizenUBIData(
@@ -194,7 +185,7 @@ if (chainId == 31337) {
                     // already closed are included in the "Round Open" tests. Both revert as expected.
 
                     it("emits an UBIRoundHasClosed event", async function () {
-                        console.log(Date.now());
+                        // console.log(Date.now());
                         await time.increase(1166400); // 13.5 days worth of seconds
                         await expect(ubiDash.closeRound()).to.emit(ubiDash, "UBIRoundHasClosed");
                     });
@@ -241,7 +232,7 @@ if (chainId == 31337) {
                         });
                         it("pays user correct payment in UBI token", async function () {
                             await citizen2Calling.withdrawUBI();
-                            const balance = await ubiToken.balanceOf(citizen2.address);
+                            const balance = (await ubiToken.balanceOf(citizen2.address)) / 1e18;
                             assert.equal(balance, 1000);
                         });
                         it("emits a 'CitizenHasBeenPaid' event", async function () {
@@ -250,7 +241,6 @@ if (chainId == 31337) {
                                 .to.emit(ubiDash, "CitizenHasBeenPaid")
                                 .withArgs(citizen2.address, payment);
                         });
-                        // The only getter functions/parameters not tested yet are below:
                         describe("Human-Readable Getters", function () {
                             it("gets correctly calculated UBI percentage", async function () {
                                 await ubiDash.openRound();
@@ -261,23 +251,7 @@ if (chainId == 31337) {
                                 );
                                 assert.equal(citizen2percentage, 50);
                             });
-                            // it("gets UBI round times", async function () {
-                            //     await ubiDash.openRound();
-                            //     const opentime = Math.floor(new Date().getTime() / 1000);
-                            //     const closetime = opentime + 1166400000;
-                            //     const nextopentime = closetime + 43200000;
-                            //     const [, roundopen, roundclose, , , nextopen] =
-                            //         await ubiDash.getUBIStats();
-                            //     console.log(opentime, BigNumber.from("roundopen"));
-                            //     // This assertion test is not recommended, but since we are testing
-                            //     // time, and there will be slippage due to different machine clocks,
-                            //     // this is adequate for a portfolio tester.
-                            //     expect(opentime).to.be.closeTo(roundopen, 2000000); // about 33 minutes
-                            //     expect(closetime).to.be.closeTo(roundclose, 2000000);
-                            //     expect(nextopentime).to.be.closeTo(nextopen, 2000000);
-                            //     //assert.equal(closetime, roundclose);
-                            //     //assert.equal(nextopentime, nextopen);
-                            // });
+                            // Most other getters have been tested organically above.
                         });
                     });
                 });
@@ -286,14 +260,6 @@ if (chainId == 31337) {
     });
 }
 
-// describe("Dashboard Access", function () {
-//     beforeEach(async function () {
-//         const citizen1 = await ubiDash.connect(accounts[1]);
-//     });
-//     it("reverts if Proof of Humanity verification is unsuccessful", async function () {});
-//     it("reverts if wallet does not hold Citizen NFT", async function () {});
-//     it("reverts and sends an already voted error", async function () {});
-// });
 //   describe("Member Information Section", function () {
 //             it("reverts if user has not completed DAO knowledge Section", async function () {});
 //             it("reverts if user has already submitted information", async function () {});
