@@ -69,9 +69,9 @@ contract UBIDashboard {
     error UBIRoundHasAlreadyBeenClosed();
     error ScoreMustBeBetween0and100();
     error WithdrawFirstORAlreadySubmitted();
+    error MustBeInGoodStanding();
     error MustSubmitUBIBeforePayment();
     error AlreadyClaimedUBIPayment();
-    error MustBeInGoodStandingToReceiveUBI();
 
     constructor(address _ubiToken) {
         i_ubiToken = UBIToken(_ubiToken);
@@ -227,6 +227,14 @@ contract UBIDashboard {
         if (walletToCitizenUBIData[msg.sender].progress == UBIProgress.HasBeenPaid) {
             revert AlreadyClaimedUBIPayment();
         }
+        /* The "good standing" check has been commented out so that users can freely test the UBI
+         * withdrawal function without having to worry about being in good standing. Note: if it
+         * is desired for this check to be implemented, this function and submitUBI() need to be
+         * altered so that the user can still vote, just not withdraw.
+         */
+        // if (walletToCitizenUBIData[msg.sender].inGoodStanding == false) {
+        //     revert MustBeInGoodStanding();
+        // }
         if (
             walletToCitizenUBIData[msg.sender].progress == UBIProgress.HasNotSubmittedUBI ||
             walletToCitizenUBIData[msg.sender].votedPreviousRound == false

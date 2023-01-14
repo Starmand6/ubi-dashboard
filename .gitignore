@@ -57,7 +57,6 @@ ADboilerplates.js
 contracts/test/fuzzing/crytic-export
 not_used
 OLD
-scripts
 .prettierignore
 .prettierrc
 front-end

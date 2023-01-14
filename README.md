@@ -23,41 +23,47 @@
 
 The Universal Basic Information (UBI) Dashboard is an on-chain, hive-mind repository that pays DAO members to provide data that governs the organization ultimately through smart contracts. After being proven in DAOs, the system and process flow can be scaled to cities. As our world systems become more complex, information symmetry will play a bigger role, and community data coordination will be one of the most valuable public goods. So why not pay each other for it?
 
-This repo doubles as a proof of concept and a portfolio project. Please see the Future Considerations section for production features and functionality to add that will enhance the robustness (yikes) of the dApp and user experience and really like, collectively, sweeten it all up for people. For more regarding the greater context of how such a UBI system could benefit DAOs and cities, please read this series of Medium articles:
-medium links
+This repo doubles as a proof of concept and a portfolio project. Please see the Future Considerations section for production features and functionality to add that will enhance the robustness (<i>gross</i>) of the dApp and user experience and really like, collectively, bring it all home for people. For more regarding the greater context of how such a UBI system could benefit DAOs and cities, please read this series on Medium:
 
-On to the brass tacks:
+Article 1: [Digital Symmetry Coursing Through the Network City](https://medium.com/@ArmandDaigle/digital-symmetry-coursing-through-the-network-city-51f06c0c77e5)
 
-<b>Contract Deployment addresses:</b>
+Article 2: [DAO Voter Turnout and Other Impossible Feats of Humankind](https://medium.com/@ArmandDaigle/dao-voter-turnout-and-other-impossible-feats-of-humankind-756a27bbedfc)
 
-DAO UBI Token (DUBI) contract address on Ethereum-Goerli: ```0x1Fde80Cd9445a346c8aF2B709F702fc5F9eb2537```
+Article 3: [Universal Basic Information: Mining the Renewable Public Good](https://medium.com/@ArmandDaigle/universal-basic-information-mining-the-renewable-public-good-d6a86bb0d489)
 
-UBI Dashboard contract address on Ethereum-Goerli: ```0xB73142c2b34Bc3BFadc3c140BCb1FE5aA68cC941```
+Article 4: [The Universal Basic Information Dashboard Framework](https://medium.com/@ArmandDaigle/the-universal-basic-information-dashboard-framework-8eef9544c175)
 
-<b>UBI Dashboard Live dApp</b>
+<br>
 
-Frontend Website: Fleek.co link
+<b>Project Links</b>
+
+[Back End Github Repository](https://github.com/Starmand6/ubi-dashboard)
+
+[Front End Github Repository](https://github.com/Starmand6/ubi-dashboard-front-end)
+
+<u>Contract Deployment Addresses</u>
+
+- [UBI Dashboard Contract Page](https://goerli.etherscan.io/address/0xb73142c2b34bc3bfadc3c140bcb1fe5aa68cc941#code) on Goerli Etherscan. The Contract address is: ```0xB73142c2b34Bc3BFadc3c140BCb1FE5aA68cC941```
+- [DAO UBI Token (DUBI) Contract Page](https://goerli.etherscan.io/address/0x1Fde80Cd9445a346c8aF2B709F702fc5F9eb2537#code) on Goerli Etherscan. The contract address is: ```0x1Fde80Cd9445a346c8aF2B709F702fc5F9eb2537```
+
+<u>UBI Dashboard Live dApp</u>
+
+## [UBI Dashboard LIVE dApp](https://misty-art-7284.on.fleek.co/)
+<p>
 
 To connect with the live dApp, switch your MetaMask wallet to the Goerli testnet (here's a [how-to guide](https://blog.cryptostars.is/goerli-g%C3%B6rli-testnet-network-to-metamask-and-receiving-test-ethereum-in-less-than-2-min-de13e6fe5677) on adding it to MetaMask if needed). You will need testnet Ether to interact with the contract. You can get some at this lovely [faucet](https://goerlifaucet.com/). After that, you should be all set. Remember, for testing and portfolio purposes, anyone can open and close the rounds, which enables and disables certain functions, so if someone else is accessing it at the same time, you may get errors when trying to interact with the dApp. You can also go to the Goerli Etherscan contract pages and interact with the contracts there via the "Read Contract" and "Write Contract" buttons. The getter links under "Read Contract" should always work no matter if someone else is opening or closing rounds.
 
-- [UBI Dashboard Contract Page](https://goerli.etherscan.io/address/0xb73142c2b34bc3bfadc3c140bcb1fe5aa68cc941#code) on Goerli Etherscan
 
-- [DUBI Token Contract Page](https://goerli.etherscan.io/address/0x1Fde80Cd9445a346c8aF2B709F702fc5F9eb2537#code) on Goerli Etherscan
+- UBI Participant Prerequisites: 
+    - In a production build, users must be a DAO member or Citizen (but again, for this testnet dApp, anyone can register and participate.)
+    - In order to be eligible to withdraw UBI, users must have participated in at least 70% of the UBI rounds that have occured since they first voted. 
 
+- UBIToken.sol Contract Functionality:
+    - There are really only two ways for the public to interact with this contract, and I'll save you the effort. Since the UBI Dashboard contract is the owner of the UBI Token contract (see the Usage Notes section for more info), users can only call the `ubiIssuanceHalving()` function on the token contract. However, this is really just a math helper function for the `payUBI()` function, and it returns the `ubiPayment` amount, which you can just obtain from the getter that is automatically generated by Solidity from the public variable. Here are the two getters:
+        - `startingTimeStamp()` = 1673082216 (unix time) => Jan-07-2023 09:03:36 AM +UTC
+        - `ubiPayment()` = 1,000 DUBI (this will not halve until ~ Jan 07, 2025)
 
-<u>UBI Participant Prerequisites:</u> 
-
-- In a production build, users must be a DAO member or Citizen (but again, for this testnet dApp, anyone can register and participate.)
-- In order to be eligible to collect UBI, users must have participated in at least 70% of the UBI rounds that have occured since they first voted. 
-
-<u>UBIToken.sol Contract Functionality:</u>
-
-There are really only two ways for the public to interact with this contract, and I'll save you the effort. Since the UBI Dashboard contract is the owner of the UBI Token contract (see the Usage Notes section for more info), users can only call the `ubiIssuanceHalving()` function on the token contract. However, this is really just a math helper function for the `payUBI()` function, and it returns the `ubiPayment` amount, which you can just obtain from the getter that is automatically generated by Solidity from the public variable. Here are the two getters:
-
-`startingTimeStamp()` = 1673082216 (unix time) => Jan-07-2023 09:03:36 AM +UTC
-`ubiPayment()` = 1,000 DUBI (this will not halve until ~ Jan 07, 2025)
-
-<u>UBIDashboard.sol Contract Functionality:</u>
+<u>UBIDashboard.sol Contract Functionality</u>
 
 - General User Functions:
     - `register()` populates the CitizenData struct for the user. It can only be called once for each wallet address. Registration can be used in tandem with other checks (proof-of-personhood, DAO NFT, etc.) to gate as needed. See the Usage Notes and Future Considerations sections for more info. The CitizenData struct is organized as follows:
@@ -73,9 +79,9 @@ There are really only two ways for the public to interact with this contract, an
     - `submitUBI(dcwScore)` is the main function here at the moment. Users can submit their DAO/Democratic Collective Welfare Score between 0 and 100 according to how they are feeling about their DAO or city. This concept has been borrowed from Ralph Merkle's essay ["DAOs, Democracy, and Governance."](https://ralphmerkle.com/papers/DAOdemocracyDraft.pdf) DCW is a pretty elegant tool if you ask me. The score is recorded on the blockchain and goes into the calculation of the total average DCW score across all users for each round. This can help convey the overall health of the DAO or city in one, easy-to-read metric.
     - `withdrawUBI()` can only be called after the user submits their UBI <i>and</i> the UBI round they submitted in is over. There is no expiry of tokens, but users won't be able to vote again until they withdraw first. <p>
 
-- Chainlink Automation functions:
+- Chainlink Automation Functions:
     - `openRound()` opens the UBI round and enables users to `submitUBI(dcwScore)`. In a production environment, users will be able to do much much more!
-    - `closeRound()` closes the UBI round. (A trial run using Chainlink Automation for these functions can be seen in the Usage Notes section.) Once `openRound()` is called, the job is scheduled to close the UBI round 13 days and 12 hours after the round has opened.<p>
+    - `closeRound()` closes the UBI round. (A trial run using Chainlink Automation for these functions can be seen in the Usage Notes section.) Once `openRound()` is called, the job can be scheduled to close the UBI round 13 days and 12 hours after the round has opened.<p>
 
     Note: Anyone can call these functions, but using the Chainlink suggested revalidation technique, you can uncomment the `block.timestamp` qualifier so that the round is not called before the 13.5 days have passed if Chainlink Automation is milliseconds behind another actor in calling closeRound().
 
@@ -91,23 +97,20 @@ There are really only two ways for the public to interact with this contract, an
     - `registeredCitizens(address)` is a mapping that returns a boolean for each address -- true meaning the address is registered.
     - `walletToCitizenUBIData(address)` is perhaps one of the more useful functions for nosy people. One can find out for any address passed in: how many UBI rounds it has voted in, first UBI round voted in, its UBI voting percentage, if it is in good standing, and if it has voted in the previous round. 
 
-
-<u>Project Highlights:</u>
+<u>Project Highlights</u>
 
 - Use of an Enum within a Struct for function and logic gating
+- Code snippets for integrating Proof of Humanity or Governor DAO's Proof of Existence in combination with a DAO membership NFT (using CityDAO's Citizen NFT as an example) to gate the UBI Dashboard accordingly.
+- Transfer of UBI Token contract ownership to the Dashboard contract
 - Deployed to the Ethereum - Goerli Testnet
 - UBI Token and Dashboard contracts are verified on Goerli Etherscan
-- Working frontend for live dApp interaction with Metamask
+- Working front end for live dApp interaction with Metamask
 - Chainlink Automation integration testing
-- Subgraph of DUBI token (in progress)
-- Code snippets for integrating Proof of Humanity or Governor DAO's Proof of Existence in combination with a DAO membership NFT (using CityDAO's Citizen NFT as an example) to gate the UBI Dashboard accordingly.
+- Subgraph of DUBI token (coming later)
 
-
-<U>Testing Highlights:</U>
+<U>Testing Highlights</U>
 
 - 33 of 33 unit tests passing
-- stage tests passing
-
 - Hardhat Network Test Coverage: 
 
 ```sh
@@ -123,7 +126,7 @@ All files          |      100 |    78.95 |    93.33 |    97.22 |                
 ```
 (Note: code has been tweaked since this run, so coverage numbers will be a bit less than this now.)
 
-Goerli Testnet Gas Stats:
+<u>Goerli Testnet Gas Stats</u>
 
 - Deploying UBI Dashboard Contract: 1,961,315
 - Deploying UBI Token Contract: 1,662,880 
@@ -147,11 +150,11 @@ Goerli Testnet Gas Stats:
 -   Hardhat local node and console (to interact with contracts)
 -   Mocha, Chai, Waffle, and Chai Helpers (for testing)
 -   Alchemy to connect to Ethereum - Goerli Testnet (Alchemy is a platform that generates APIs and offers scure connections to the Blockchain)
-- Frontend stuffies: React, NextJS, Moralis, and some other things I know nothing about.
+- Front end stuffies: React, NextJS, Moralis, and some other things I know nothing about.
 
 ## CLI and Interaction Steps
 
-Since I am focusing on being a backend developer, I am only including in-depth steps for the backend portion. You don't want to hear me kerfuffling around with frontend stuff.
+Since I am focusing on being a back end developer, I am only including in-depth steps for the back end portion. You don't want to hear me kerfuffling around with front end stuff.
 
 0. For quickstart, clone the repo
     ```sh
@@ -270,13 +273,27 @@ After deploying both the UBIToken and UBIDashboard contracts, the change-ubi-tok
 
 All payments are denominated in DUBI. Initial payment amount is set at 1000 DUBI with halvings roughly every two years. After calling withdrawUBI(), you will need to add the DUBI token to your MetaMask to see it. If needed, here's a [tutorial](https://metamask.zendesk.com/hc/en-us/articles/360015489031-How-to-display-tokens-in-MetaMask) on how to add tokens to your wallet.
 
-<u>Live dApp:</u>
+<u>Live dApp</u>
 
-Here are screenshots of the frontend connected with the deployed backend.
+Here is the link again for convenience: [UBI Dashboard MVP dApp](https://misty-art-7284.on.fleek.co/)
 
-Here is the website link again for convenience:
+Below are screenshots of the front end connected with the deployed back end. Quick reminders: Users need to register first, then they can freely open and close UBI rounds. You can only submit UBI when a round is open, and you can only withdraw UBI after the round you have submitted UBI in has closed. You can submit UBI again in a future round <i>only after</i> you withdraw your UBI payment. 
+<br>
 
-<u>Chainlink Automation Steps and Screenshots:</u>
+![Alt text](screenshots/DashboardFrontEnd1.png)
+![Alt text](screenshots/DashboardFrontEnd2.png)
+
+<u>Chainlink Automation Steps and Screenshots</u>
+
+I scheduled time-based upkeep on openRound() and closeRound() to happen 20 minutes apart from each other just for testing purposes. Here are the screenshots of the setup and the transactions, verified on Etherscan (yay, they worked!):
+<p>
+
+![Alt text](screenshots/ChainlinkAutomationOpenRound2.png?raw=true "Open Round Upkeep")
+![Alt text](screenshots/ChainlinkAutomationCloseRound1.png?raw=true "Close Round Upkeep")
+![Alt text](screenshots/ChainlinkAutoUpkeepOnOpenRound.png?raw=true "Open Upkeep performed")
+![Alt text](screenshots/ChainlinkAutoUpkeepOnCloseRound.png?raw=true "Close Upkeep performed")
+![Alt text](screenshots/ChainlinkAutoEtherscan1.png?raw=true "Etherscan transactions")
+![Alt text](screenshots/ChainlinkAutoEtherscan2.png?raw=true "Etherscan transactions")
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
