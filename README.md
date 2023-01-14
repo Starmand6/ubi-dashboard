@@ -23,7 +23,7 @@
 
 The Universal Basic Information (UBI) Dashboard is an on-chain, hive-mind repository that pays DAO members to provide data that governs the organization ultimately through smart contracts. After being proven in DAOs, the system and process flow can be scaled to cities. As our world systems become more complex, information symmetry will play a bigger role, and community data coordination will be one of the most valuable public goods. So why not pay each other for it?
 
-This repo doubles as a proof of concept and a portfolio project. Please see the Future Considerations section for production features and functionality to add that will enhance the robustness (<i>gross</i>) of the dApp and user experience and really like, collectively, bring it all home for people. For more regarding the greater context of how such a UBI system could benefit DAOs and cities, please read this series on Medium:
+This repo doubles as a proof of concept and a portfolio project. Please see the Future Considerations section for production features and functionality to add that will greatly improve the dApp and user experience and really like, collectively, bring it all home for people. For more regarding the greater context of how such a UBI system could benefit DAOs and cities, please read this series on Medium:
 
 Article 1: [Digital Symmetry Coursing Through the Network City](https://medium.com/@ArmandDaigle/digital-symmetry-coursing-through-the-network-city-51f06c0c77e5)
 
