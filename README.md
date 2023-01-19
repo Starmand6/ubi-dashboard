@@ -9,7 +9,7 @@
     <li><a href="#cli-and-interaction-steps">CLI and Interaction Steps</a></li>
     <li><a href="#usage">Usage Notes</a></li>
     <li><a href="#future-considerations">Future Considerations</a></li>
-    <li><a href="#lessons-learned">Lessons Learnedd</a></li>
+    <li><a href="#lessons-learned">Lessons Learned</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
